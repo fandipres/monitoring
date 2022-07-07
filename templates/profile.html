@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest Compiled and Minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- jQuery Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <!-- Latest Compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Eksternal CSS -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
+    <!-- Internal JavaScript -->
+    <script>
+        function showHidePassword() {
+            var password = document.getElementById("currentpassword");
+            var newpassword = document.getElementById("newpassword");
+            if (password.type === "password" && newpassword.type === "password") {
+                password.type = "text";
+                newpassword.type = "text";
+            } else {
+                password.type = "password";
+                newpassword.type = "password";
+            }
+        }
+        function showPasswordForm() {
+            document.getElementById("btnpassword").style.display = "none";
+            document.getElementById("divpassword").style.display = "block";
+            document.getElementById("btnedit").style.display = "none";
+            document.getElementById("btncancel").style.display = "none";
+            document.getElementById("btnsubmit").style.display = "none";
+            document.getElementById("username").readOnly = true;
+            document.getElementById("name").readOnly = true;
+            document.getElementById("phone").readOnly = true;
+        }
+        function hidePasswordForm() {
+            document.getElementById("currentpassword").value = "";
+            document.getElementById("newpassword").value = "";
+            document.getElementById("btnpassword").style.display = "block";
+            document.getElementById("divpassword").style.display = "none";
+            document.getElementById("btnedit").style.display = "block";
+
+        }
+        function editForm() {
+            document.getElementById("usernametemp").value = document.getElementById("username").value;
+            document.getElementById("btnedit").style.display = "none";
+            document.getElementById("btncancel").style.display = "inline";
+            document.getElementById("btnsubmit").style.display = "inline";
+            document.getElementById("username").readOnly = false;
+            document.getElementById("name").readOnly = false;
+            document.getElementById("phone").readOnly = false;
+        }
+        function hideForm() {
+            document.getElementById("btnedit").style.display = "block";
+            document.getElementById("btncancel").style.display = "none";
+            document.getElementById("btnsubmit").style.display = "none";
+            document.getElementById("username").readOnly = true;
+            document.getElementById("name").readOnly = true;
+            document.getElementById("phone").readOnly = true;
+        }
+    </script>
+    <title>Profile</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">Hi User!</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav mr-auto">
+                    {%for item in navbar%}
+                    {%if item.url%}
+                    <li class="nav-item {{'active' if item.url == '/profile' else ''}}">
+                        <a class="nav-link" href="{{item.url}}">{{item.text}}</a>
+                    </li>
+                    {%endif%}
+                    {%endfor%}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Keluar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <h3 class="my-2">Profile</h3>
+                {%if error%}
+                <p id="error" class="error bg-danger text-white p-2 mb-2" style="margin: 0;"><strong>Error:</strong>
+                    {{error}}</p>
+                {%endif%}
+                {%if success%}
+                <p id="error" class="error bg-success text-white p-2 mb-2" style="margin: 0;">{{success}}</p>
+                {%endif%}
+                <form action="" method="post">
+                    <div class="row form-group">
+                        <div class="col-md-2"><label class="form-label" for="username">Username</label></div>
+                        <span class="hidesmall">:</span>
+                        <div class="col-md-6">
+                            <input type="hidden" id="usernametemp" name="usernametemp" />
+                            <input type="text" id="username" name="username" class="form-control" value="{{username}}"
+                                readonly />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-2"><label class="form-label" for="name">Nama</label></div>
+                        <span class="hidesmall">:</span>
+                        <div class="col-md-6"><input type="text" id="name" name="name" class="form-control"
+                                value="{{data['nama']}}" readonly /></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-2"><label class="form-label" for="phone">No. Telepon</label></div>
+                        <span class="hidesmall">:</span>
+                        <div class="col-md-6"><input type="number" id="phone" name="phone" class="form-control"
+                                value="{{data['no_telepon']}}" readonly /></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-2"><label class="form-label" for="password">Password</label></div>
+                        <span class="hidesmall">:</span>
+                        <div class="col-md-6">
+                            <input id="btnpassword" type="button" class="btn btn-secondary w-100" value="Ganti Password"
+                                onclick="showPasswordForm()" />
+                            <div id="divpassword" class="bg-light p-3" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="phone">Password Saat Ini</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="password" id="currentpassword" name="currentpassword"
+                                            class="form-control" value="{{request.form.password}}" />
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-md-4">
+                                        <label class="form-label" for="phone">Password Baru</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="password" id="newpassword" name="newpassword" class="form-control"
+                                            value="{{request.form.password}}" />
+                                        <div class="form-check mt-1">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                id="checkboxpassword" onclick="showHidePassword()">
+                                            <label class="form-check-label" for="checkboxpassword">
+                                                Tampilkan password
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-8">
+                                        <button id="btncancelpassword" type="button" class="btn btn-secondary"
+                                            onclick="hidePasswordForm()">Batal</button>
+                                        <input id="btnsubmitpassword" type="submit" class="btn btn-primary"
+                                            name="_method" value="Ganti Password" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="hidesmall col-md-2"></div>
+                        <span class="hidesmall">&nbsp;</span>
+                        <div class="col-md-6">
+                            <button id="btnedit" type="button" class="btn btn-primary"
+                                onclick="editForm()">Edit</button>
+                            <button id="btncancel" type="button" class="btn btn-secondary" onclick="hideForm()"
+                                style="display: none;">Batal</button>
+                            <input id="btnsubmit" type="submit" class="btn btn-primary" name="_method" value="Simpan"
+                                style="display: none;" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

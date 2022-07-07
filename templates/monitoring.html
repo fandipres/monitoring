@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest Compiled and Minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- jQuery Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <!-- Latest Compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Internal CSS -->
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        @media (min-width:961px) {
+            img {
+                height: 60%;
+            }
+        }
+    </style>
+    <title>Monitoring</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">Hi User!</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav mr-auto">
+                    {%for item in navbar%}
+                    {%if item.url%}
+                    <li class="nav-item {{'active' if item.url == '/monitoring' else ''}}">
+                        <a class="nav-link" href="{{item.url}}">{{item.text}}</a>
+                    </li>
+                    {%endif%}
+                    {%endfor%}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Keluar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <h3 class="my-2">Monitoring</h3>
+                <img src="{{url_for('video_feed')}}" width="100%">
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

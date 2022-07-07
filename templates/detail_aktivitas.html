@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest Compiled and Minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- jQuery Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <!-- Latest Compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Eksternal CSS -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
+    <title>Detail Aktivitas</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">Hi User!</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav mr-auto">
+                    {%for item in navbar%}
+                    {%if item.url%}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{item.url}}">{{item.text}}</a>
+                    </li>
+                    {%endif%}
+                    {%endfor%}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Keluar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <h3 class="my-2">Detail Aktivitas</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>Judul Aktivitas</p>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end">
+                        <p>Waktu</p>
+                    </div>
+                </div>
+                <img src="https://asset-a.grid.id//crop/0x0:0x0/360x240/photo/2021/07/13/gambar-ilustrasi-bisa-memperjela-20210713123218.jpg"
+                    width="100%" height="40%">
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                            data-target="#modalDelete">Hapus
+                            Riwayat</button>
+                        <!-- Modal Delete Activity -->
+                        <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog"
+                            aria-labelledby="modalDeleteTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Hapus Riwayat Aktivitas?</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Apakah Anda yakin ingin menghapus riwayat aktivitas berikut?<br>
+                                            Harap dipahami bahwa riwayat aktivitas yang sudah dihapus tidak dapat
+                                            dikembalikan.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Batal</button>
+                                        <button type="button" class="btn btn-danger">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                            data-target="#modalEdit">Edit</button>
+                        <!-- Modal Edit Activity -->
+                        <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog"
+                            aria-labelledby="modalEditTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Edit Riwayat Aktivitas</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row form-group">
+                                            <div class="col-md-2"><label class="form-label" for="waktu">Waktu</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <input type="datetime-local" class="form-control" id="date" name="date">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Batal</button>
+                                        <button type="button" class="btn btn-primary">Simpan</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

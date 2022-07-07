@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest Compiled and Minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- jQuery Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <!-- Latest Compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Eksternal CSS -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
+    <title>Riwayat Monitoring</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">Hi User!</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav mr-auto">
+                    {%for item in navbar%}
+                    {%if item.url%}
+                    <li class="nav-item {{'active' if item.url == '/riwayat_monitoring' else ''}}">
+                        <a class="nav-link" href="{{item.url}}">{{item.text}}</a>
+                    </li>
+                    {%endif%}
+                    {%endfor%}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Keluar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <h3 class="my-2">Riwayat Monitoring</h3>
+                <div class="row">
+                    <div class="hidesmall col-md-1" style="max-width: 3.33%;">
+                        <i class="fa fa-calendar" aria-hidden="true" style="font-size: 32px;"></i>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <input type="datetime-local" class="form-control" id="startdate" name="startdate">
+                    </div>
+                    <span class="hidesmall py-1">-</span>
+                    <div class="col-md-3 form-group">
+                        <input type="datetime-local" class="form-control" id="enddate" name="enddate">
+                    </div>
+                    <div class="plnone col-md-2 form-group">
+                        <select class="custom-select">
+                            <option selected>Pilih Aktivitas</option>
+                            <option value="membuka-pintu">Membuka Pintu</option>
+                            <option value="mengambil-hp">Mengambil HP</option>
+                        </select>
+                    </div>
+                    <div class="plnone col-md-2 form-group">
+                        <input type="submit" class="btn btn-primary" value="Filter" />
+                    </div>
+                </div>
+                <div class="divtable">
+                    <table class="table table-sm text-center table-bordered">
+                        <thead class="thead-light sticky-top">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Kode</th>
+                                <th scope="col">Waktu</th>
+                                <th scope="col">Aktivitas</th>
+                                <th scope="col">Gambar</th>
+                                <th scope="col">Catatan</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for i in range(0, len)%}
+                            <tr>
+                                <td>{{i+1}}</td>
+                                <td>{{data[i].text}}</td>
+                                <td>{{data[i].text2}}</td>
+                                <td>{{data[i].text3}}</td>
+                                <td>{{data[i].text4}}</td>
+                                <td>{{data[i].text5}}</td>
+                                <td>{{data[i].text6}}</td>
+                            </tr>
+                        </tbody>
+                        {%endfor%}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

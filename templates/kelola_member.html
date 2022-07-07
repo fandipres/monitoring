@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest Compiled and Minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- jQuery Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <!-- Latest Compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Eksternal CSS -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
+    <!-- Internal JavaScript -->
+    <script>
+        function showHidePassword() {
+            var password = document.getElementById("password");
+            var passwordedit = document.getElementById("passwordedit");
+            password.type === "password" ? password.type = "text" : password.type = "password";
+            passwordedit.type === "password" ? passwordedit.type = "text" : passwordedit.type = "password";
+        }
+        function searchMember() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchmember");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("tablemember");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                td2 = tr[i].getElementsByTagName("td")[2];
+                if (td || td2) {
+                    txtValue = td.textContent || td.innerText || td2.textContent || td2.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function cancelAddMember() {
+            document.getElementById("username").value = "";
+            document.getElementById("name").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("password").value = "";
+            document.getElementsByClassName("custom-select")[0].selectedIndex = 0;
+        }
+        function editMember(e) {
+            var table = document.getElementsByTagName("table")[0];
+            var tbody = table.getElementsByTagName("tbody")[0];
+            e = e || window.event;
+            var data = [];
+            var target = e.srcElement || e.target;
+            while (target && target.nodeName !== "TR") {
+                target = target.parentNode;
+            }
+            if (target) {
+                var cells = target.getElementsByTagName("td");
+                document.getElementById("usernameedittemp").value = cells[1].innerHTML;
+                document.getElementById("usernameedit").value = cells[1].innerHTML;
+                document.getElementById("nameedit").value = cells[2].innerHTML;
+                document.getElementById("phoneedit").value = cells[3].innerHTML;
+            }
+        }
+        function hapusMember(e) {
+            var table = document.getElementsByTagName("table")[0];
+            var tbody = table.getElementsByTagName("tbody")[0];
+            e = e || window.event;
+            var data = [];
+            var target = e.srcElement || e.target;
+            while (target && target.nodeName !== "TR") {
+                target = target.parentNode;
+            }
+            if (target) {
+                var cells = target.getElementsByTagName("td");
+                document.getElementById("usernamedeletetemp").value = cells[1].innerHTML;
+                document.getElementById("usernamedeletetemp2").innerHTML = cells[1].innerHTML;
+            }
+        }
+    </script>
+    <title>Kelola Member</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">Hi User!</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav mr-auto">
+                    {%for item in navbar%}
+                    {%if item.url%}
+                    <li class="nav-item {{'active' if item.url == '/kelola_member' else ''}}">
+                        <a class="nav-link" href="{{item.url}}">{{item.text}}</a>
+                    </li>
+                    {%endif%}
+                    {%endfor%}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Keluar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <h3 class="my-2">Kelola Member</h3>
+                <div class="row form-group">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalAddMember">
+                            Tambah Member
+                        </button>
+                        <!-- Modal Add Member -->
+                        <form action="" method="post">
+                            <div class="modal fade" id="modalAddMember" tabindex="-1" role="dialog"
+                                aria-labelledby="modalAddMemberTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">Tambah Member Baru</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row form-group">
+                                                <div class="col-md-3"><label class="form-label"
+                                                        for="username">Username</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <input type="text" id="username" name="username"
+                                                        class="form-control" placeholder="Username" />
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col-md-3"><label class="form-label" for="name">Nama</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <input type="text" id="name" name="name" class="form-control"
+                                                        placeholder="Nama" />
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col-md-3"><label class="form-label" for="phone">No.
+                                                        Telepon</label></div>
+                                                <div class="col-md-9">
+                                                    <input type="number" id="phone" name="phone" class="form-control"
+                                                        placeholder="No. Telepon" />
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col-md-3"><label class="form-label"
+                                                        for="password">Password</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <input type="password" id="password" name="password"
+                                                        class="form-control" placeholder="Password" />
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col-md-3"></div>
+                                                <div class="col-md-9">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value=""
+                                                            id="checkboxpassword" onclick="showHidePassword()">
+                                                        <label class="form-check-label" for="checkboxpassword">
+                                                            Tampilkan password
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3"><label class="form-label" for="role">Role</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <select class="custom-select" name="role">
+                                                        <option value="member">Member</option>
+                                                        <option value="admin">Admin</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                onclick="cancelAddMember()">Batal</button>
+                                            <input type="submit" class="btn btn-primary" name="_method"
+                                                value="Tambah" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-3 mt-2 prnone"><label class="form-label" for="searchmember">Cari
+                                    Member</label></div>
+                            <div class="col-md-9"><input id="searchmember" onkeyup="searchMember()" type="text"
+                                    class="form-control" placeholder="Masukkan Username atau Nama"></div>
+                        </div>
+                    </div>
+                </div>
+                {%if error%}
+                <p id="error" class="error bg-danger text-white p-2" style="margin: 0;"><strong>Error:</strong>
+                    {{error}}</p>
+                {%endif%}
+                {%if success%}
+                <p id="error" class="error bg-success text-white p-2" style="margin: 0;">{{success}}</p>
+                {%endif%}
+                <div class="divtable">
+                    <table id="tablemember" class="table table-sm text-center table-bordered">
+                        <thead class="thead-light sticky-top">
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Nama</th>
+                                <th scope="col">No. Telepon</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for i, j in data%}
+                            <tr>
+                                <td>{{loop.index}}</td>
+                                <td>{{i}}</td>
+                                <td>{{j['nama']}}</td>
+                                <td>{{j['no_telepon']}}</td>
+                                <td><a href="#"><span data-toggle="modal" data-target="#modalEditMember"
+                                            onclick="editMember()">Edit</span></a>&nbsp;<a href="#"><span
+                                            data-toggle="modal" data-target="#modalDeleteMember" class="text-danger"
+                                            onclick="hapusMember()">Hapus</span></a></td>
+                                <!-- Modal Edit Member -->
+                                <form action="" method="post">
+                                    <div class="modal fade" id="modalEditMember" tabindex="-1" role="dialog"
+                                        aria-labelledby="modalEditMemberTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">Edit Data Member
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row form-group">
+                                                        <div class="col-md-3"><label class="form-label"
+                                                                for="usernameedit">Username</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="hidden" id="usernameedittemp"
+                                                                name="usernameedittemp" />
+                                                            <input type="text" id="usernameedit" name="usernameedit"
+                                                                class="form-control" placeholder="Username" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col-md-3"><label class="form-label"
+                                                                for="nameedit">Nama</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" id="nameedit" name="nameedit"
+                                                                class="form-control" placeholder="Nama" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col-md-3"><label class="form-label"
+                                                                for="phoneedit">No.
+                                                                Telepon</label></div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" id="phoneedit" name="phoneedit"
+                                                                class="form-control" placeholder="No. Telepon" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col-md-3"><label class="form-label"
+                                                                for="passwordedit">Reset Password</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="password" id="passwordedit" name="passwordedit"
+                                                                class="form-control" placeholder="Password" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3"></div>
+                                                        <div class="col-md-9">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value=""
+                                                                    id="checkboxpassword" onclick="showHidePassword()">
+                                                                <label class="form-check-label" for="checkboxpassword">
+                                                                    Tampilkan password
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Batal</button>
+                                                    <input type="submit" class="btn btn-primary" name="_method"
+                                                        value="Simpan" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- Modal Delete Member -->
+                                <form action="" method="post">
+                                    <div class="modal fade" id="modalDeleteMember" tabindex="-1" role="dialog"
+                                        aria-labelledby="modalDeleteMemberTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">Hapus Member?
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" id="usernamedeletetemp"
+                                                        name="usernamedeletetemp" />
+                                                    <p>Apakah Anda yakin ingin menghapus user <span
+                                                            id="usernamedeletetemp2"
+                                                            class="font-weight-bold text-danger"></span> dari sistem?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Batal</button>
+                                                    <input type="submit" class="btn btn-danger" name="_method"
+                                                        value="Hapus" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </tr>
+                        </tbody>
+                        {%endfor%}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
