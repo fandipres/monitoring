@@ -4,8 +4,8 @@ from firebase_admin import credentials, db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Connect to Firebase
-cred = credentials.Certificate('fbAdminConfig.json')
-firebase = firebase_admin.initialize_app(cred, {'databaseURL':json.load(open('fbconfig.json'))['databaseURL']})
+cred = credentials.Certificate('firebase/fbAdminConfig.json')
+firebase = firebase_admin.initialize_app(cred, {'databaseURL':json.load(open('firebase/fbConfig.json'))['databaseURL']})
 
 # DB Reference
 ref = db.reference('/')
@@ -13,7 +13,7 @@ admin_ref=ref.child('Admin')
 member_ref=ref.child('Member')
 kategori_ref=ref.child('Kategori_Aktivitas')
 riwayat_ref=ref.child('Riwayat_Monitoring')
-log_ref=ref.child('Log_Riwayat_Aktivitas')
+log_ref=ref.child('Log_Riwayat_Monitoring')
 
 # Menu Utama
 print("MENU UTAMA")
@@ -30,11 +30,11 @@ if(opsi == 1):
     opsi = int(input("Opsi : "))
     if(opsi == 1):
         print("LIHAT DATA ADMIN")
-        tbl = admin_ref.get(True, False)[0].items() if member_ref.get()!=None else ""
+        tbl = admin_ref.get(True, False)[0].items() if len(admin_ref.get())!=0 else ""
         print(tbl)
     elif(opsi == 2):
         print("LIHAT DATA MEMBER")
-        tbl = member_ref.get(True, False)[0].items() if member_ref.get()!=None else ""
+        tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
         print(tbl)
     elif(opsi == 3):
         print("TAMBAH DATA ADMIN")
@@ -60,10 +60,10 @@ elif(opsi == 2):
     opsi = int(input("Opsi : "))
     if(opsi == 1):
         print("LIHAT DATA AKTIVITAS")
-        tbl = kategori_ref.get(True, False)[0] if kategori_ref.get()!=None else ""
+        tbl = kategori_ref.get(True, False)[0] if len(kategori_ref.get())!=0 else ""
         print(tbl)
     elif(opsi == 2):
-        count = 0 if kategori_ref.get()==None else int([*kategori_ref.get(False, True)][-1])+1
+        count = 0 if len(kategori_ref.get())==0 else int([*kategori_ref.get(False, True)][-1])+1
         print("TAMBAH DATA AKTIVITAS")
         aktivitas = input("Nama Aktivitas : ")
         kategori_ref.child(str(count)).set({'nama_aktivitas': aktivitas})
