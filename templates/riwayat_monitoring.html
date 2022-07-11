@@ -15,6 +15,43 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Eksternal CSS -->
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
+    <!-- Internal JavaScript -->
+    <script>
+        function filterRiwayat() {
+            console.log(document.getElementById("startdate").value);
+        }
+        function editRiwayat(e) {
+            var table = document.getElementsByTagName("table")[0];
+            var tbody = table.getElementsByTagName("tbody")[0];
+            e = e || window.event;
+            var data = [];
+            var target = e.srcElement || e.target;
+            while (target && target.nodeName !== "TR") {
+                target = target.parentNode;
+            }
+            if (target) {
+                var cells = target.getElementsByTagName("td");
+                var datetemp = document.getElementById("date").value = cells[2].innerHTML;
+                document.getElementById("riwayatedittemp").value = cells[1].innerHTML;
+                document.getElementById("date").value = datetemp.substring(6, 10) + "-" + datetemp.substring(3, 5) + "-" + datetemp.substring(0, 2) + "T" + datetemp.substring(11, 19);
+            }
+        }
+        function hapusRiwayat(e) {
+            var table = document.getElementsByTagName("table")[0];
+            var tbody = table.getElementsByTagName("tbody")[0];
+            e = e || window.event;
+            var data = [];
+            var target = e.srcElement || e.target;
+            while (target && target.nodeName !== "TR") {
+                target = target.parentNode;
+            }
+            if (target) {
+                var cells = target.getElementsByTagName("td");
+                document.getElementById("riwayatdeletetemp").value = cells[1].innerHTML;
+                document.getElementById("riwayatdeletetemp2").innerHTML = cells[1].innerHTML;
+            }
+        }
+    </script>
     <title>Riwayat Monitoring</title>
 </head>
 
@@ -53,11 +90,11 @@
                         <i class="fa fa-calendar" aria-hidden="true" style="font-size: 32px;"></i>
                     </div>
                     <div class="col-md-3 form-group">
-                        <input type="datetime-local" class="form-control" id="startdate" name="startdate">
+                        <input type="datetime-local" step="1" class="form-control" id="startdate" name="startdate">
                     </div>
                     <span class="hidesmall py-1">-</span>
                     <div class="col-md-3 form-group">
-                        <input type="datetime-local" class="form-control" id="enddate" name="enddate">
+                        <input type="datetime-local" step="1" class="form-control" id="enddate" name="enddate">
                     </div>
                     <div class="plnone col-md-2 form-group">
                         <select class="custom-select">
@@ -67,9 +104,16 @@
                         </select>
                     </div>
                     <div class="plnone col-md-2 form-group">
-                        <input type="submit" class="btn btn-primary" value="Filter" />
+                        <input type="button" class="btn btn-primary" value="Filter" onclick="filterRiwayat()" />
                     </div>
                 </div>
+                {%if error%}
+                <p id="error" class="error bg-danger text-white p-2" style="margin: 0;"><strong>Error:</strong>
+                    {{error}}</p>
+                {%endif%}
+                {%if success%}
+                <p id="error" class="error bg-success text-white p-2" style="margin: 0;">{{success}}</p>
+                {%endif%}
                 <div class="divtable">
                     <table class="table table-sm text-center table-bordered">
                         <thead class="thead-light sticky-top">
@@ -79,20 +123,91 @@
                                 <th scope="col">Waktu</th>
                                 <th scope="col">Aktivitas</th>
                                 <th scope="col">Gambar</th>
-                                <th scope="col">Catatan</th>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {%for i in range(0, len)%}
+                            {%for i, j in data%}
                             <tr>
-                                <td>{{i+1}}</td>
-                                <td>{{data[i].text}}</td>
-                                <td>{{data[i].text2}}</td>
-                                <td>{{data[i].text3}}</td>
-                                <td>{{data[i].text4}}</td>
-                                <td>{{data[i].text5}}</td>
-                                <td>{{data[i].text6}}</td>
+                                <td>{{loop.index}}</td>
+                                <td>{{i}}</td>
+                                <td>{{j['waktu']}}</td>
+                                <td>{{j['kategori']}}</td>
+                                <td>{{j['gambar']}}</td>
+                                <td><a href="#"><span data-toggle="modal" data-target="#modalEditRiwayat"
+                                            onclick="editRiwayat()">Edit</span></a>&nbsp;<a href="#"><span
+                                            data-toggle="modal" data-target="#modalDeleteRiwayat" class="text-danger"
+                                            onclick="hapusRiwayat()">Hapus</span></a></td>
+                                <!-- Modal Edit Riwayat -->
+                                <form action="" method="post">
+                                    <div class="modal fade" id="modalEditRiwayat" tabindex="-1" role="dialog"
+                                        aria-labelledby="modalEditRiwayatTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">Edit Riwayat
+                                                        Aktivitas</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row form-group">
+                                                        <div class="col-md-3"><label class="form-label"
+                                                                for="waktu">Waktu</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="hidden" id="riwayatedittemp"
+                                                                name="riwayatedittemp" />
+                                                            <input type="datetime-local" step="1" class="form-control"
+                                                                id="date" name="date">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Batal</button>
+                                                    <input type="submit" class="btn btn-primary" name="_method"
+                                                        value="Simpan" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- Modal Delete Riwayat -->
+                                <form action="" method="post">
+                                    <div class="modal fade" id="modalDeleteRiwayat" tabindex="-1" role="dialog"
+                                        aria-labelledby="modalDeleteRiwayatTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">Hapus Riwayat
+                                                        Aktivitas?</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" id="riwayatdeletetemp"
+                                                        name="riwayatdeletetemp" />
+                                                    <p>Apakah Anda yakin ingin menghapus <span id="riwayatdeletetemp2"
+                                                            class="font-weight-bold text-danger"></span>?<br>
+                                                        Harap dipahami bahwa riwayat aktivitas yang sudah dihapus tidak
+                                                        dapat
+                                                        dikembalikan.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Batal</button>
+                                                    <input type="submit" class="btn btn-danger" name="_method"
+                                                        value="Hapus" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </tr>
                         </tbody>
                         {%endfor%}
