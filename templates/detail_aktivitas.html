@@ -56,7 +56,7 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('index')}}">Keluar</a>
+                        <a class="nav-link" href="{{url_for('logout')}}">Keluar</a>
                     </li>
                 </ul>
             </div>
@@ -82,6 +82,7 @@
                 <p id="error" class="error bg-success text-white p-2" style="margin: 0;">{{success}}</p>
                 {%endif%}
                 <img src="{{data['gambar']}}" width="100%">
+                {%if admin%}
                 <div class="row mt-2">
                     <div class="col-md-12">
                         <button type="button" class="btn btn-danger" data-toggle="modal"
@@ -157,6 +158,7 @@
                     </div>
                 </div>
             </div>
+            {%endif%}
         </div>
     </main>
 </body>
