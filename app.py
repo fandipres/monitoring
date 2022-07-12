@@ -75,7 +75,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 cfg.merge_from_file(model_zoo.get_config_file("Misc/mask_rcnn_R_50_FPN_3x_gn.yaml"))
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
 cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.3
+cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.55 # Akurasi
 cfg.DATASETS.TEST = ("skin_test", )
 predictor = DefaultPredictor(cfg)
 
@@ -120,8 +120,9 @@ def gen_frames():
             break
         else:
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
-            log = [int(i) for i in log]
-            log = max(log)+1
+            if(isinstance(log, list)):
+                log = [int(i) for i in log]
+                log = max(log)+1
             predictions = predictor(frame)
             if(len(predictions.get("instances").pred_classes) != 0):
                 v = Visualizer(frame[:,:,::-1], metadata=microcontroller_metadata, scale=1, instance_mode=ColorMode.SEGMENTATION)
@@ -133,13 +134,10 @@ def gen_frames():
                 blob = bucket.blob("img-"+filename)
                 blob.upload_from_filename("capture\img-"+filename)
                 if(0 in predictions.get("instances").pred_classes):
-                    print("mengambil_handphone")
                     riwayat_ref.child("act-"+filename[0:-5]).set({'kategori': "0", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'gambar': "img-"+filename})
                 elif(1 in predictions.get("instances").pred_classes):
-                    print("membuka_pintu")
                     riwayat_ref.child("act-"+filename[0:-5]).set({'kategori': "1", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'gambar': "img-"+filename})
                 elif(0 in predictions.get("instances").pred_classes and 1 in predictions.get("instances").pred_classes):
-                    print("dua-duanya")
                     riwayat_ref.child("act-"+filename[0:-5]).set({'kategori': "0, 1", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'gambar': "img-"+filename})
                 log_ref.child(str(log)).set({'riwayat': "act-"+filename[0:-5], 'username': "sistem", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'keterangan': 'created'})
                 ret, buffer = cv2.imencode('.jpg', output.get_image()[:,:,::-1])
@@ -189,8 +187,9 @@ def riwayat_monitoring():
             return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, admin=session["admin"])
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
-            log = [int(i) for i in log]
-            log = max(log)+1
+            if(isinstance(log, list)):
+                log = [int(i) for i in log]
+                log = max(log)+1
             time = datetime.datetime.now()
             date = request.form.get('date')
             if(request.form.get('riwayatedittemp')!="act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]):
@@ -219,8 +218,9 @@ def riwayat_monitoring():
                 return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, admin=session["admin"])
         elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
-            log = [int(i) for i in log]
-            log = max(log)+1
+            if(isinstance(log, list)):
+                log = [int(i) for i in log]
+                log = max(log)+1
             time = datetime.datetime.now()
             if len(riwayat_ref.get())==1:
                 error = "Tidak dapat menghapus riwayat monitoring, minimal terdapat 1 riwayat monitoring."
@@ -258,8 +258,9 @@ def detail_aktivitas(activity):
                 return render_template('notfound.html')
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
-            log = [int(i) for i in log]
-            log = max(log)+1
+            if(isinstance(log, list)):
+                log = [int(i) for i in log]
+                log = max(log)+1
             time = datetime.datetime.now()
             date = request.form.get('date')
             if(request.form.get('riwayatedittemp')!="act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]):
@@ -291,8 +292,9 @@ def detail_aktivitas(activity):
                 return render_template('detail_aktivitas.html', user=session['user'], act=activity, data=tbl, admin=session["admin"])
         elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
-            log = [int(i) for i in log]
-            log = max(log)+1
+            if(isinstance(log, list)):
+                log = [int(i) for i in log]
+                log = max(log)+1
             time = datetime.datetime.now()
             if len(riwayat_ref.get())==1:
                 error = "Tidak dapat menghapus riwayat monitoring, minimal terdapat 1 riwayat monitoring."
