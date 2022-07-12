@@ -217,8 +217,8 @@ def riwayat_monitoring():
                     j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
             return render_template('riwayat_monitoring.html', data=tbl, error=error)
         else:
-            riwayat_ref.child(request.form.get('usernamedeletetemp')).delete()
-            log_ref.child(str(log)).set({'riwayat': request.form.get('usernamedeletetemp'), 'username': "admin", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'keterangan': 'deleted'})
+            riwayat_ref.child(request.form.get('riwayatdeletetemp')).delete()
+            log_ref.child(str(log)).set({'riwayat': request.form.get('riwayatdeletetemp'), 'username': "admin", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'keterangan': 'deleted'})
             success = "Riwayat monitoring berhasil dihapus."
             tbl = riwayat_ref.get(True, False)[0].items() if len(riwayat_ref.get())!=0 else ""
             if(len(tbl)!=0):
