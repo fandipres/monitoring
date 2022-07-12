@@ -17,8 +17,72 @@
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
     <!-- Internal JavaScript -->
     <script>
+        function resetFilter() {
+            var start, end, activity, table, tr, td, i, txtValue;
+            start = document.getElementById("startdate").value = "";
+            end = document.getElementById("enddate").value = "";
+            activity = document.getElementsByClassName("custom-select")[0].selectedIndex = 0;
+            table = document.getElementById("tableriwayat");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                tr[i].style.display = "";
+            }
+        }
         function filterRiwayat() {
-            console.log(document.getElementById("startdate").value);
+            var start, end, activity, table, tr, td, i, txtValue;
+            start = document.getElementById("startdate").value;
+            end = document.getElementById("enddate").value;
+            activity = document.getElementsByClassName("custom-select")[0];
+            table = document.getElementById("tableriwayat");
+            tr = table.getElementsByTagName("tr");
+
+            if ((start != "" && end != "") && activity.selectedIndex != 0) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    td2 = tr[i].getElementsByTagName("td")[3];
+                    if (td || td2) {
+                        txtValue = td.textContent.substring(6, 10) + "-" + td.textContent.substring(3, 5) + "-" + td.textContent.substring(0, 2) + "T" + td.textContent.substring(11, 19);
+                        txtValue2 = td2.textContent || td2.innerText;
+                        if ((txtValue >= start && txtValue <= end) && txtValue2.toLowerCase().indexOf(activity.value) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            else if ((start != "" && end != "") && activity.selectedIndex == 0) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        txtValue = td.textContent.substring(6, 10) + "-" + td.textContent.substring(3, 5) + "-" + td.textContent.substring(0, 2) + "T" + td.textContent.substring(11, 19);
+                        if (txtValue >= start && txtValue <= end) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            else if ((start == "" && end == "") && activity.selectedIndex != 0) {
+                for (i = 0; i < tr.length; i++) {
+                    td2 = tr[i].getElementsByTagName("td")[3];
+                    if (td2) {
+                        txtValue2 = td2.textContent || td2.innerText;
+                        if (txtValue2.toLowerCase().indexOf(activity.value) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            else {
+                for (i = 0; i < tr.length; i++) {
+                    tr[i].style.display = "";
+                }
+            }
         }
         function editRiwayat(e) {
             var table = document.getElementsByTagName("table")[0];
@@ -90,7 +154,8 @@
                         <i class="fa fa-calendar" aria-hidden="true" style="font-size: 32px;"></i>
                     </div>
                     <div class="col-md-3 form-group">
-                        <input type="datetime-local" step="1" class="form-control" id="startdate" name="startdate">
+                        <input type="datetime-local" step="1" pattern="MM-DD-YYYY HH:mm" class="form-control"
+                            id="startdate" name="startdate">
                     </div>
                     <span class="hidesmall py-1">-</span>
                     <div class="col-md-3 form-group">
@@ -99,12 +164,13 @@
                     <div class="plnone col-md-2 form-group">
                         <select class="custom-select">
                             <option selected>Pilih Aktivitas</option>
-                            <option value="membuka-pintu">Membuka Pintu</option>
-                            <option value="mengambil-hp">Mengambil HP</option>
+                            <option value="membuka pintu">Membuka Pintu</option>
+                            <option value="mengambil hp">Mengambil HP</option>
                         </select>
                     </div>
-                    <div class="plnone col-md-2 form-group">
-                        <input type="button" class="btn btn-primary" value="Filter" onclick="filterRiwayat()" />
+                    <div class="plnone col-md-3 form-group">
+                        <button type="button" class="btn btn-secondary" onclick="resetFilter()">Reset</button>
+                        <button type="button" class="btn btn-primary" onclick="filterRiwayat()">Filter</button>
                     </div>
                 </div>
                 {%if error%}
@@ -115,7 +181,7 @@
                 <p id="error" class="error bg-success text-white p-2" style="margin: 0;">{{success}}</p>
                 {%endif%}
                 <div class="divtable">
-                    <table class="table table-sm text-center table-bordered">
+                    <table id="tableriwayat" class="table table-sm text-center table-bordered">
                         <thead class="thead-light sticky-top">
                             <tr>
                                 <th scope="col">No</th>
@@ -133,7 +199,7 @@
                                 <td>{{i}}</td>
                                 <td>{{j['waktu']}}</td>
                                 <td>{{j['kategori']}}</td>
-                                <td>{{j['gambar']}}</td>
+                                <td><a href="/detail-aktivitas/{{i}}">Lihat</a></td>
                                 <td><a href="#"><span data-toggle="modal" data-target="#modalEditRiwayat"
                                             onclick="editRiwayat()">Edit</span></a>&nbsp;<a href="#"><span
                                             data-toggle="modal" data-target="#modalDeleteRiwayat" class="text-danger"
