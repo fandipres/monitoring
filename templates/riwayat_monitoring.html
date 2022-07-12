@@ -100,7 +100,7 @@
                 document.getElementById("date").value = datetemp.substring(6, 10) + "-" + datetemp.substring(3, 5) + "-" + datetemp.substring(0, 2) + "T" + datetemp.substring(11, 19);
             }
         }
-        function hapusRiwayat(e) {
+        function deleteRiwayat(e) {
             var table = document.getElementsByTagName("table")[0];
             var tbody = table.getElementsByTagName("tbody")[0];
             e = e || window.event;
@@ -199,11 +199,11 @@
                                 <td>{{i}}</td>
                                 <td>{{j['waktu']}}</td>
                                 <td>{{j['kategori']}}</td>
-                                <td><a href="/detail-aktivitas/{{i}}">Lihat</a></td>
+                                <td><a href="/detail_aktivitas/{{i}}" target="_blank">Lihat</a></td>
                                 <td><a href="#"><span data-toggle="modal" data-target="#modalEditRiwayat"
                                             onclick="editRiwayat()">Edit</span></a>&nbsp;<a href="#"><span
                                             data-toggle="modal" data-target="#modalDeleteRiwayat" class="text-danger"
-                                            onclick="hapusRiwayat()">Hapus</span></a></td>
+                                            onclick="deleteRiwayat()">Hapus</span></a></td>
                                 <!-- Modal Edit Riwayat -->
                                 <form action="" method="post">
                                     <div class="modal fade" id="modalEditRiwayat" tabindex="-1" role="dialog"
