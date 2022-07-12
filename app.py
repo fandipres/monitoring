@@ -385,46 +385,78 @@ def kelola_member():
 def profile():
     if(session.get("admin")!=None):
         if(request.method == "GET"):
-            tbl = member_ref.child(session['user']).get()
+            if(session["admin"]==True):
+                tbl = admin_ref.child(session['user']).get()
+            else:
+                tbl = member_ref.child(session['user']).get()
             return render_template('profile.html', user=session['user'], username=session['user'], data=tbl)
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             if(request.form.get('username') == ""):
                 error = "Field username tidak boleh kosong."
-                tbl = member_ref.child(username).get()
+                if(session["admin"]==True):
+                    tbl = admin_ref.child(session['user']).get()
+                else:
+                    tbl = member_ref.child(session['user']).get()
                 return render_template('profile.html', user=session['user'], username=session['user'], data=tbl, error=error)
             elif(request.form.get('username') != request.form.get('usernametemp')):
                 if(admin_ref.child(request.form.get('username')).get()!=None or member_ref.child(request.form.get('username')).get()!=None):
                     error = "Username sudah dipergunakan, silahkan gunakan username lain."
-                    tbl = member_ref.child(request.form.get('username')).get()
+                    if(session["admin"]==True):
+                        tbl = admin_ref.child(request.form.get('username')).get()
+                    else:
+                        tbl = member_ref.child(request.form.get('username')).get()
                     return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
                 else:
-                    member_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': member_ref.child(request.form.get('usernametemp')).child('password').get()})
-                    member_ref.child(request.form.get('usernametemp')).delete()
+                    if(session["admin"]==True):
+                        admin_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': admin_ref.child(request.form.get('usernametemp')).child('password').get()})
+                        admin_ref.child(request.form.get('usernametemp')).delete()
+                        tbl = admin_ref.child(request.form.get('username')).get()
+                    else:
+                        member_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': member_ref.child(request.form.get('usernametemp')).child('password').get()})
+                        member_ref.child(request.form.get('usernametemp')).delete()
+                        tbl = member_ref.child(request.form.get('username')).get()
                     success = "Perubahan data berhasil disimpan."
-                    session['user'] = request.form.get('username')
-                    tbl = member_ref.child(request.form.get('username')).get()
+                    session['user'] = request.form.get('username')   
                     return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
             else:
-                member_ref.child(request.form.get('username')).update({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': member_ref.child(request.form.get('usernametemp')).child('password').get()})
+                if(session["admin"]==True):
+                    admin_ref.child(request.form.get('username')).update({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': admin_ref.child(request.form.get('usernametemp')).child('password').get()})
+                    tbl = admin_ref.child(request.form.get('username')).get()
+                else:
+                    member_ref.child(request.form.get('username')).update({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': member_ref.child(request.form.get('usernametemp')).child('password').get()})
+                    tbl = member_ref.child(request.form.get('username')).get()
                 success = "Perubahan data berhasil disimpan."
                 session['user'] = request.form.get('username')
-                tbl = member_ref.child(request.form.get('username')).get()
                 return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
         elif(request.method == "POST" and request.form.get('_method') == "Ganti Password"):
             if(request.form.get('currentpassword') == "" or request.form.get('newpassword') == ""):
                 error = "Field password tidak boleh kosong."
-                tbl = member_ref.child(request.form.get('username')).get()
+                if(session["admin"]==True):
+                    tbl = admin_ref.child(request.form.get('username')).get()
+                else:
+                    tbl = member_ref.child(request.form.get('username')).get()
                 return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
             else:
-                if(check_password_hash(member_ref.child(request.form.get('username')).child('password').get(), request.form.get('currentpassword'))):
-                    member_ref.child(request.form.get('username')).update({'password': generate_password_hash(request.form.get('newpassword'), "sha256")})
-                    success = "Password berhasil diganti."
-                    tbl = member_ref.child(request.form.get('username')).get()
-                    return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
+                if(session["admin"]==True):
+                    if(check_password_hash(admin_ref.child(request.form.get('username')).child('password').get(), request.form.get('currentpassword'))):
+                        admin_ref.child(request.form.get('username')).update({'password': generate_password_hash(request.form.get('newpassword'), "sha256")})
+                        success = "Password berhasil diganti."
+                        tbl = admin_ref.child(request.form.get('username')).get()
+                        return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
+                    else:
+                        error = "Password saat ini salah."
+                        tbl = admin_ref.child(request.form.get('username')).get()
+                        return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
                 else:
-                    error = "Password saat ini salah."
-                    tbl = member_ref.child(request.form.get('username')).get()
-                    return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
+                    if(check_password_hash(member_ref.child(request.form.get('username')).child('password').get(), request.form.get('currentpassword'))):
+                        member_ref.child(request.form.get('username')).update({'password': generate_password_hash(request.form.get('newpassword'), "sha256")})
+                        success = "Password berhasil diganti."
+                        tbl = member_ref.child(request.form.get('username')).get()
+                        return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
+                    else:
+                        error = "Password saat ini salah."
+                        tbl = member_ref.child(request.form.get('username')).get()
+                        return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
     else:
         return redirect(url_for('forbidden'))
         
