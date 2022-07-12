@@ -174,7 +174,7 @@ def index():
 @app.route('/monitoring')
 def monitoring():
     if(session.get("admin")!=None):
-        return render_template('monitoring.html')
+        return render_template('monitoring.html', user=session['user'])
     else:
         return redirect(url_for('forbidden'))
         
@@ -186,7 +186,7 @@ def riwayat_monitoring():
             if(len(tbl)!=0):
                 for i, j in tbl:
                     j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
-            return render_template('riwayat_monitoring.html', data=tbl, admin=session["admin"])
+            return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, admin=session["admin"])
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
             log = [int(i) for i in log]
@@ -200,7 +200,7 @@ def riwayat_monitoring():
                     if(len(tbl)!=0):
                         for i, j in tbl:
                             j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
-                    return render_template('riwayat_monitoring.html', data=tbl, error=error, admin=session["admin"])
+                    return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, error=error, admin=session["admin"])
                 else:
                     riwayat_ref.child("act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]).set({'kategori': riwayat_ref.child(request.form.get('riwayatedittemp')).child('kategori').get(), 'waktu': date[8:10]+"/"+date[5:7]+"/"+date[0:4]+"-"+date[11:19], 'gambar': riwayat_ref.child(request.form.get('riwayatedittemp')).child('gambar').get()})
                     riwayat_ref.child(request.form.get('riwayatedittemp')).delete()
@@ -210,13 +210,13 @@ def riwayat_monitoring():
                     if(len(tbl)!=0):
                         for i, j in tbl:
                             j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
-                    return render_template('riwayat_monitoring.html', data=tbl, success=success, admin=session["admin"])
+                    return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, success=success, admin=session["admin"])
             else:
                 tbl = riwayat_ref.get(True, False)[0].items() if len(riwayat_ref.get())!=0 else ""
                 if(len(tbl)!=0):
                     for i, j in tbl:
                         j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
-                return render_template('riwayat_monitoring.html', data=tbl, admin=session["admin"])
+                return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, admin=session["admin"])
         elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
             log = [int(i) for i in log]
@@ -228,7 +228,7 @@ def riwayat_monitoring():
                 if(len(tbl)!=0):
                     for i, j in tbl:
                         j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
-                return render_template('riwayat_monitoring.html', data=tbl, error=error, admin=session["admin"])
+                return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, error=error, admin=session["admin"])
             else:
                 blob = bucket.blob(riwayat_ref.child(request.form.get('riwayatdeletetemp')).child('gambar').get())
                 blob.delete()
@@ -239,7 +239,7 @@ def riwayat_monitoring():
                 if(len(tbl)!=0):
                     for i, j in tbl:
                         j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
-                return render_template('riwayat_monitoring.html', data=tbl, success=success, admin=session["admin"])
+                return render_template('riwayat_monitoring.html', user=session['user'], data=tbl, success=success, admin=session["admin"])
     else:
         return redirect(url_for('forbidden'))
 
@@ -248,11 +248,14 @@ def detail_aktivitas(activity):
     if(session.get("admin")!=None):
         if(request.method == "GET"):
             tbl = riwayat_ref.child(activity).get()
-            tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
-            blob = bucket.blob(tbl['gambar'])
-            blob.make_public()
-            tbl['gambar']=blob.public_url
-            return render_template('detail_aktivitas.html', act=activity, data=tbl, admin=session["admin"])
+            if(tbl!=None):
+                tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
+                blob = bucket.blob(tbl['gambar'])
+                blob.make_public()
+                tbl['gambar']=blob.public_url
+                return render_template('detail_aktivitas.html', user=session['user'], act=activity, data=tbl, admin=session["admin"])
+            else:
+                return render_template('notfound.html')
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
             log = [int(i) for i in log]
@@ -267,7 +270,7 @@ def detail_aktivitas(activity):
                     blob = bucket.blob(tbl['gambar'])
                     blob.make_public()
                     tbl['gambar']=blob.public_url
-                    return render_template('detail_aktivitas.html', act=activity, data=tbl, error=error, admin=session["admin"])
+                    return render_template('detail_aktivitas.html', user=session['user'], act=activity, data=tbl, error=error, admin=session["admin"])
                 else:
                     riwayat_ref.child("act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]).set({'kategori': riwayat_ref.child(request.form.get('riwayatedittemp')).child('kategori').get(), 'waktu': date[8:10]+"/"+date[5:7]+"/"+date[0:4]+"-"+date[11:19], 'gambar': riwayat_ref.child(request.form.get('riwayatedittemp')).child('gambar').get()})
                     riwayat_ref.child(request.form.get('riwayatedittemp')).delete()
@@ -285,7 +288,7 @@ def detail_aktivitas(activity):
                 blob = bucket.blob(tbl['gambar'])
                 blob.make_public()
                 tbl['gambar']=blob.public_url
-                return render_template('detail_aktivitas.html', act=activity, data=tbl, admin=session["admin"])
+                return render_template('detail_aktivitas.html', user=session['user'], act=activity, data=tbl, admin=session["admin"])
         elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
             log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
             log = [int(i) for i in log]
@@ -298,7 +301,7 @@ def detail_aktivitas(activity):
                 blob = bucket.blob(tbl['gambar'])
                 blob.make_public()
                 tbl['gambar']=blob.public_url
-                return render_template('detail_aktivitas.html', act=activity, data=tbl, error=error, admin=session["admin"])
+                return render_template('detail_aktivitas.html', user=session['user'], act=activity, data=tbl, error=error, admin=session["admin"])
             else:
                 blob = bucket.blob(riwayat_ref.child(request.form.get('riwayatdeletetemp')).child('gambar').get())
                 blob.delete()
@@ -318,16 +321,16 @@ def kelola_member():
     if(session.get("admin")!=None and session["admin"]==True):
         if(request.method == "GET"):
             tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
-            return render_template('kelola_member.html', data=tbl)
+            return render_template('kelola_member.html', user=session['user'], data=tbl)
         elif(request.method == "POST" and request.form.get('_method') == "Tambah"):
             if(request.form.get('username') == "" or request.form.get('password') == ""):
                 tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
                 error = "Field username dan field password tidak boleh kosong."
-                return render_template('kelola_member.html', data=tbl, error=error)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, error=error)
             elif(admin_ref.child(request.form.get('username')).get()!=None or member_ref.child(request.form.get('username')).get()!=None):
                 tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
                 error = "Username sudah digunakan, silahkan gunakan username lain."
-                return render_template('kelola_member.html', data=tbl, error=error)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, error=error)
             else:
                 if(request.form.get('role') == "admin"):
                     admin_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': generate_password_hash(request.form.get('password'), "sha256")})
@@ -335,17 +338,17 @@ def kelola_member():
                     member_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': generate_password_hash(request.form.get('password'), "sha256")})
                 success = "Data user berhasil ditambahkan."
                 tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
-                return render_template('kelola_member.html', data=tbl, success=success)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, success=success)
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             if(request.form.get('usernameedit') == ""):
                 tbl = member_ref.get(True, False)[0].items()
                 error = "Field username tidak boleh kosong."
-                return render_template('kelola_member.html', data=tbl, error=error)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, error=error)
             elif(request.form.get('usernameedit') != request.form.get('usernameedittemp')):
                 if(admin_ref.child(request.form.get('usernameedit')).get()!=None or member_ref.child(request.form.get('usernameedit')).get()!=None):
                     error = "Username sudah dipergunakan, silahkan gunakan username lain."
                     tbl = member_ref.get(True, False)[0].items()
-                    return render_template('kelola_member.html', data=tbl, error=error)
+                    return render_template('kelola_member.html', user=session['user'], data=tbl, error=error)
                 else:
                     if(request.form.get('passwordedit') == ""):
                         member_ref.child(request.form.get('usernameedit')).set({'nama': request.form.get('nameedit'), 'no_telepon': request.form.get('phoneedit'), 'password': member_ref.child(request.form.get('usernameedittemp')).child('password').get()})
@@ -354,7 +357,7 @@ def kelola_member():
                     member_ref.child(request.form.get('usernameedittemp')).delete()
                     success = "Data user berhasil diperbaharui."
                     tbl = member_ref.get(True, False)[0].items()
-                    return render_template('kelola_member.html', data=tbl, success=success)
+                    return render_template('kelola_member.html', user=session['user'], data=tbl, success=success)
             else:
                 if(request.form.get('passwordedit') == ""):
                     member_ref.child(request.form.get('usernameedit')).update({'nama': request.form.get('nameedit'), 'no_telepon': request.form.get('phoneedit'), 'password': member_ref.child(request.form.get('usernameedittemp')).child('password').get()})
@@ -362,63 +365,64 @@ def kelola_member():
                     member_ref.child(request.form.get('usernameedit')).update({'nama': request.form.get('nameedit'), 'no_telepon': request.form.get('phoneedit'), 'password': generate_password_hash(request.form.get('passwordedit'), "sha256")})
                 success = "Data user berhasil diperbaharui."
                 tbl = member_ref.get(True, False)[0].items()
-                return render_template('kelola_member.html', data=tbl, success=success)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, success=success)
         elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
             if len(member_ref.get())==1:
                 error = "Tidak dapat menghapus member, minimal terdapat 1 member."
                 tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
-                return render_template('kelola_member.html', data=tbl, error=error)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, error=error)
             else:
                 member_ref.child(request.form.get('usernamedeletetemp')).delete()
                 success = "Data user berhasil dihapus."
                 tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
-                return render_template('kelola_member.html', data=tbl, success=success)
+                return render_template('kelola_member.html', user=session['user'], data=tbl, success=success)
     else:
         return redirect(url_for('forbidden'))
         
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if(session.get("admin")!=None):
-        username = session['user']
         if(request.method == "GET"):
-            tbl = member_ref.child(username).get()
-            return render_template('profile.html', username=username, data=tbl)
+            tbl = member_ref.child(session['user']).get()
+            return render_template('profile.html', user=session['user'], username=session['user'], data=tbl)
         elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
             if(request.form.get('username') == ""):
                 error = "Field username tidak boleh kosong."
                 tbl = member_ref.child(username).get()
-                return render_template('profile.html', username=username, data=tbl, error=error)
+                return render_template('profile.html', user=session['user'], username=session['user'], data=tbl, error=error)
             elif(request.form.get('username') != request.form.get('usernametemp')):
                 if(admin_ref.child(request.form.get('username')).get()!=None or member_ref.child(request.form.get('username')).get()!=None):
                     error = "Username sudah dipergunakan, silahkan gunakan username lain."
                     tbl = member_ref.child(request.form.get('username')).get()
-                    return render_template('profile.html', username=request.form.get('username'), data=tbl, error=error)
+                    return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
                 else:
                     member_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': member_ref.child(request.form.get('usernametemp')).child('password').get()})
                     member_ref.child(request.form.get('usernametemp')).delete()
                     success = "Perubahan data berhasil disimpan."
+                    session['user'] = request.form.get('username')
                     tbl = member_ref.child(request.form.get('username')).get()
-                    return render_template('profile.html', username=request.form.get('username'), data=tbl, success=success)
+                    return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
             else:
                 member_ref.child(request.form.get('username')).update({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': member_ref.child(request.form.get('usernametemp')).child('password').get()})
                 success = "Perubahan data berhasil disimpan."
+                session['user'] = request.form.get('username')
                 tbl = member_ref.child(request.form.get('username')).get()
-                return render_template('profile.html', username=request.form.get('username'), data=tbl, success=success)
+                return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
         elif(request.method == "POST" and request.form.get('_method') == "Ganti Password"):
             if(request.form.get('currentpassword') == "" or request.form.get('newpassword') == ""):
                 error = "Field password tidak boleh kosong."
                 tbl = member_ref.child(request.form.get('username')).get()
-                return render_template('profile.html', username=request.form.get('username'), data=tbl, error=error)
+                return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
             else:
                 if(check_password_hash(member_ref.child(request.form.get('username')).child('password').get(), request.form.get('currentpassword'))):
                     member_ref.child(request.form.get('username')).update({'password': generate_password_hash(request.form.get('newpassword'), "sha256")})
                     success = "Password berhasil diganti."
                     tbl = member_ref.child(request.form.get('username')).get()
-                    return render_template('profile.html', username=request.form.get('username'), data=tbl, success=success)
+                    return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, success=success)
                 else:
                     error = "Password saat ini salah."
                     tbl = member_ref.child(request.form.get('username')).get()
-                    return render_template('profile.html', username=request.form.get('username'), data=tbl, error=error)
+                    return render_template('profile.html', user=session['user'], username=request.form.get('username'), data=tbl, error=error)
     else:
         return redirect(url_for('forbidden'))
         
@@ -430,6 +434,8 @@ def logout():
 
 @app.route('/forbidden')
 def forbidden():
+    session.pop('admin', None)
+    session.pop('username', None)
     return render_template('forbidden.html')
     
 if __name__ == '__main__':
