@@ -120,7 +120,9 @@ def gen_frames():
         if not success:
             break
         else:
-            log = 0 if len(log_ref.get())==0 else int([*log_ref.get(False, True)][-1])+1
+            log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
+            log = [int(i) for i in log]
+            log = max(log)+1
             predictions = predictor(frame)
             if(len(predictions.get("instances").pred_classes) != 0):
                 v = Visualizer(frame[:,:,::-1], metadata=microcontroller_metadata, scale=1, instance_mode=ColorMode.SEGMENTATION)
@@ -179,7 +181,9 @@ def riwayat_monitoring():
                 j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
         return render_template('riwayat_monitoring.html', data=tbl)
     elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
-        log = 0 if len(log_ref.get())==0 else int([*log_ref.get(False, True)][-1])+1
+        log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
+        log = [int(i) for i in log]
+        log = max(log)+1
         time = datetime.datetime.now()
         date = request.form.get('date')
         if(request.form.get('riwayatedittemp')!="act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]):
@@ -207,7 +211,9 @@ def riwayat_monitoring():
                     j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
             return render_template('riwayat_monitoring.html', data=tbl)
     elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
-        log = 0 if len(log_ref.get())==0 else int([*log_ref.get(False, True)][-1])+1
+        log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
+        log = [int(i) for i in log]
+        log = max(log)+1
         time = datetime.datetime.now()
         if len(riwayat_ref.get())==1:
             error = "Tidak dapat menghapus riwayat monitoring, minimal terdapat 1 riwayat monitoring."
@@ -217,6 +223,8 @@ def riwayat_monitoring():
                     j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
             return render_template('riwayat_monitoring.html', data=tbl, error=error)
         else:
+            blob = bucket.blob(riwayat_ref.child(request.form.get('riwayatdeletetemp')).child('gambar').get())
+            blob.delete()
             riwayat_ref.child(request.form.get('riwayatdeletetemp')).delete()
             log_ref.child(str(log)).set({'riwayat': request.form.get('riwayatdeletetemp'), 'username': "admin", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'keterangan': 'deleted'})
             success = "Riwayat monitoring berhasil dihapus."
@@ -226,9 +234,72 @@ def riwayat_monitoring():
                     j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
             return render_template('riwayat_monitoring.html', data=tbl, success=success)
 
-@app.route('/detail_aktivitas')
-def detail_aktivitas():
-    return render_template('detail_aktivitas.html')
+@app.route('/detail_aktivitas/<activity>', methods=['GET', 'POST'])
+def detail_aktivitas(activity):
+    if(request.method == "GET"):
+        tbl = riwayat_ref.child(activity).get()
+        tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
+        blob = bucket.blob(tbl['gambar'])
+        blob.make_public()
+        tbl['gambar']=blob.public_url
+        return render_template('detail_aktivitas.html', act=activity, data=tbl)
+    elif(request.method == "POST" and request.form.get('_method') == "Simpan"):
+        log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
+        log = [int(i) for i in log]
+        log = max(log)+1
+        time = datetime.datetime.now()
+        date = request.form.get('date')
+        if(request.form.get('riwayatedittemp')!="act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]):
+            if(riwayat_ref.child("act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]).get()!=None):
+                error = "Riwayat monitoring untuk waktu tersebut sudah tersedia, silahkan pilih waktu lain."
+                tbl = riwayat_ref.child(activity).get()
+                tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
+                blob = bucket.blob(tbl['gambar'])
+                blob.make_public()
+                tbl['gambar']=blob.public_url
+                return render_template('detail_aktivitas.html', act=activity, data=tbl, error=error)
+            else:
+                riwayat_ref.child("act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]).set({'kategori': riwayat_ref.child(request.form.get('riwayatedittemp')).child('kategori').get(), 'waktu': date[8:10]+"/"+date[5:7]+"/"+date[0:4]+"-"+date[11:19], 'gambar': riwayat_ref.child(request.form.get('riwayatedittemp')).child('gambar').get()})
+                riwayat_ref.child(request.form.get('riwayatedittemp')).delete()
+                log_ref.child(str(log)).set({'riwayat': request.form.get('riwayatedittemp'), 'username': "admin", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'keterangan': 'changed to '+"act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]})
+                success = "Data riwayat monitoring berhasil diperbaharui."
+                tbl = riwayat_ref.child("act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]).get()
+                tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
+                blob = bucket.blob(tbl['gambar'])
+                blob.make_public()
+                tbl['gambar']=blob.public_url
+                return redirect(url_for('detail_aktivitas', activity="act-"+date[8:10]+date[5:7]+date[0:4]+"-"+date[11:13]+date[14:16]+date[17:19]))
+        else:
+            tbl = riwayat_ref.child(activity).get()
+            tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
+            blob = bucket.blob(tbl['gambar'])
+            blob.make_public()
+            tbl['gambar']=blob.public_url
+            return render_template('detail_aktivitas.html', act=activity, data=tbl)
+    elif(request.method == "POST" and request.form.get('_method') == "Hapus"):
+        log = 0 if len(log_ref.get())==0 else [*log_ref.get(False, True)]
+        log = [int(i) for i in log]
+        log = max(log)+1
+        time = datetime.datetime.now()
+        if len(riwayat_ref.get())==1:
+            error = "Tidak dapat menghapus riwayat monitoring, minimal terdapat 1 riwayat monitoring."
+            tbl = riwayat_ref.child(activity).get()
+            tbl['kategori']=kategori_ref.child(tbl['kategori']).child('nama_aktivitas').get()
+            blob = bucket.blob(tbl['gambar'])
+            blob.make_public()
+            tbl['gambar']=blob.public_url
+            return render_template('detail_aktivitas.html', act=activity, data=tbl, error=error)
+        else:
+            blob = bucket.blob(riwayat_ref.child(request.form.get('riwayatdeletetemp')).child('gambar').get())
+            blob.delete()
+            riwayat_ref.child(request.form.get('riwayatdeletetemp')).delete()
+            log_ref.child(str(log)).set({'riwayat': request.form.get('riwayatdeletetemp'), 'username': "admin", 'waktu': time.strftime("%d/%m/%Y-%H:%M:%S"), 'keterangan': 'deleted'})
+            success = "Riwayat monitoring berhasil dihapus."
+            tbl = riwayat_ref.get(True, False)[0].items() if len(riwayat_ref.get())!=0 else ""
+            if(len(tbl)!=0):
+                for i, j in tbl:
+                    j['kategori']=kategori_ref.child(j['kategori']).child('nama_aktivitas').get()
+            return redirect(url_for('riwayat_monitoring', data=tbl, success=success))
     
 @app.route('/kelola_member', methods=['GET', 'POST'])
 def kelola_member():
