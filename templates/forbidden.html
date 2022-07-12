@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest Compiled and Minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- jQuery Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <!-- Latest Compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Internal CSS -->
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <title>Forbidden</title>
+</head>
+
+<body class="bg-secondary">
+    <main class="container">
+        <div class="col-md-8 my-auto mx-auto bg-white p-4">
+            <h2 class="text-center text-uppercase text-danger">Forbidden</h2>
+            <br>
+            <br>
+            <p>Mohon maaf, sepertinya Anda tidak memiliki hak akses menuju halaman ini. Silahkan login untuk melanjutkan
+                sesuai dengan hak akses akun Anda.</p>
+            <a class="text-center" href="{{url_for('index')}}">Klik di sini untuk Login</a>
+        </div>
+    </main>
+</body>
+
+</html>
