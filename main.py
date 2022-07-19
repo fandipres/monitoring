@@ -49,7 +49,7 @@ def get_data_dicts(directory, classes):
         dataset_dicts.append(record)
     return dataset_dicts
     
-classes = ["mengambil_handphone", "membuka_pintu"]
+classes = ["mengambil_hp", "membuka_pintu"]
 
 data_path = 'dataset/'
 
@@ -86,7 +86,7 @@ cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
 # trainer.train()
 
 cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.3
+cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.55
 cfg.DATASETS.TEST = ("skin_test", )
 predictor = DefaultPredictor(cfg)
 

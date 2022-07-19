@@ -57,7 +57,7 @@ def get_data_dicts(directory, classes):
         dataset_dicts.append(record)
     return dataset_dicts
     
-classes = ["mengambil_handphone", "membuka_pintu"]
+classes = ["mengambil_hp", "membuka_pintu"]
 
 data_path = 'dataset/'
 
