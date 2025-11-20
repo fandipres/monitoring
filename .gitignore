@@ -1,2 +1,7 @@
 *.pth
 dataset/*.pth
+
+firebase/
+
+__pycache__/
+*.pyc
