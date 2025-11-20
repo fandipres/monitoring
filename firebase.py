@@ -41,7 +41,7 @@ if(opsi == 1):
         username = input("Username : ")
         password = input("Password : ")
         if(admin_ref.child(username).get()==None):
-            admin_ref.child(username).set({'password': generate_password_hash(password, "sha256")})
+            admin_ref.child(username).set({'password': generate_password_hash(password)})
         else:
             print("Username exists.")
     elif(opsi == 4):
@@ -49,7 +49,7 @@ if(opsi == 1):
         username = input("Username : ")
         password = input("Password : ")
         if(member_ref.child(username).get()==None):
-            member_ref.child(username).set({'password': generate_password_hash(password, "sha256")})
+            member_ref.child(username).set({'password': generate_password_hash(password)})
         else:
             print("Username exists.")
 # Menu Aktivitas

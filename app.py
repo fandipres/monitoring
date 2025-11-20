@@ -74,9 +74,10 @@ cfg = get_cfg()
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 cfg.merge_from_file(model_zoo.get_config_file("Misc/mask_rcnn_R_50_FPN_3x_gn.yaml"))
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
-cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+cfg.MODEL.WEIGHTS = os.path.join("dataset/model_final.pth")
 cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.55 # Akurasi
 cfg.DATASETS.TEST = ("skin_test", )
+cfg.MODEL.DEVICE = "cpu"
 predictor = DefaultPredictor(cfg)
 
 test_dataset_dicts = get_data_dicts(data_path+'test', classes)
@@ -335,9 +336,9 @@ def kelola_member():
                 return render_template('kelola_member.html', user=session['user'], data=tbl, error=error)
             else:
                 if(request.form.get('role') == "admin"):
-                    admin_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': generate_password_hash(request.form.get('password'), "sha256")})
+                    admin_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': generate_password_hash(request.form.get('password'))})
                 else:
-                    member_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': generate_password_hash(request.form.get('password'), "sha256")})
+                    member_ref.child(request.form.get('username')).set({'nama': request.form.get('name'), 'no_telepon': request.form.get('phone'), 'password': generate_password_hash(request.form.get('password'))})
                 success = "Data user berhasil ditambahkan."
                 tbl = member_ref.get(True, False)[0].items() if len(member_ref.get())!=0 else ""
                 return render_template('kelola_member.html', user=session['user'], data=tbl, success=success)
