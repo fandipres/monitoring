@@ -80,12 +80,12 @@ Follow these steps to get the project running on your local machine:
 
     Place your Firebase config files in the firebase/ folder.
 
-5.  **Run the application:**
+6.  **Run the application:**
     ```bash
     python app.py
     ```
 
-6.  Open your browser and navigate to `http://127.0.0.1:5000` (or the port specified by Vite).
+7.  Open your browser and navigate to `http://127.0.0.1:5000`.
 
 ## 🔗 Links
 
