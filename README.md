@@ -1,4 +1,4 @@
-# 🚀 Monitoring (Web App)
+# 🚀 Monitoring
 
 Monitoring is a web application designed to monitor activities occurring in a room using real-time video captured via a camera. The captured video is then processed using the Detectron2 library to classify the observed activities.
 
