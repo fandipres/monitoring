@@ -1,6 +1,6 @@
 # 🚀 Monitoring
 
-Monitoring is a web application designed to monitor activities occurring in a room using real-time video captured via a camera. The captured video is then processed using the Detectron2 library to classify the observed activities.
+Monitoring is a web application built to track indoor activity through real-time camera video. It uses the Detectron2 object detection model to automatically recognize movement and activity, allowing users to keep an eye on a room remotely without needing to watch the feed manually at all times.
 
 ## ✨ Key Features
 
