@@ -5,3 +5,6 @@ firebase/
 
 __pycache__/
 *.pyc
+
+# Konteks proyek untuk Claude Code (jangan dipublikasikan)
+CLAUDE.md
